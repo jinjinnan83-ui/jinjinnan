@@ -1,0 +1,1519 @@
+```html
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracker App</title>
+    <script src="https://cdn.jsdelivr.net/npm/react@18.0.0/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.0.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        :root {
+            --primary-pink: #FFB5D8;
+            --primary-purple: #C4A3E8;
+            --bg-gradient: linear-gradient(180deg, #FFB5D8 0%, #FFE4F0 100%);
+            --card-bg: #FFFFFF;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --border-radius: 24px;
+            --shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: white;
+            border-radius: 50px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            border: 12px solid #000;
+        }
+
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 100;
+        }
+
+        .status-bar {
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 24px;
+            font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            z-index: 10;
+        }
+
+        .screen-content {
+            height: calc(100% - 44px);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .screen-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 28px;
+            z-index: 50;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .nav-item.active {
+            color: var(--text-primary);
+        }
+
+        .nav-item i {
+            font-size: 20px;
+        }
+
+        /* Welcome Page Styles */
+        .welcome-page {
+            background: var(--bg-gradient);
+            min-height: 100%;
+            position: relative;
+            padding: 60px 30px;
+            overflow: hidden;
+        }
+
+        .flower-decoration {
+            position: absolute;
+            opacity: 0.6;
+        }
+
+        .flower-1 {
+            top: 80px;
+            left: -40px;
+            width: 160px;
+            height: 160px;
+            background: #FF859B;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+        }
+
+        .flower-2 {
+            top: 200px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: white;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .flower-3 {
+            bottom: 120px;
+            left: 20px;
+            width: 70px;
+            height: 70px;
+            background: white;
+            clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+        }
+
+        .flower-4 {
+            bottom: 40px;
+            right: 40px;
+            width: 140px;
+            height: 140px;
+            background: var(--primary-purple);
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(45deg);
+        }
+
+        .user-image-1 {
+            position: absolute;
+            top: 140px;
+            left: 20px;
+            width: 150px;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 20px;
+            z-index: 5;
+        }
+
+        .user-image-2 {
+            position: absolute;
+            bottom: 80px;
+            left: 90px;
+            width: 130px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 20px;
+            z-index: 5;
+        }
+
+        .welcome-text {
+            position: relative;
+            z-index: 10;
+            margin-top: 280px;
+            margin-bottom: 40px;
+        }
+
+        .welcome-title {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 30px;
+        }
+
+        .share-mood-btn {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border: none;
+            padding: 16px 28px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .share-mood-btn:hover {
+            background: rgba(255,255,255,0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Home Page Styles */
+        .home-page {
+            background: #FAFAFA;
+            min-height: 100%;
+            padding-bottom: 100px;
+        }
+
+        .home-header {
+            background: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .greeting {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .user-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .notification-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .notification-btn:hover {
+            background: #e8e8e8;
+        }
+
+        .mood-section {
+            padding: 24px;
+        }
+
+        .mood-question {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text-primary);
+            line-height: 1.3;
+            margin-bottom: 20px;
+        }
+
+        .mood-options {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .mood-options::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 12px 18px;
+            background: white;
+            border-radius: 16px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 80px;
+        }
+
+        .mood-option:hover {
+            border-color: var(--primary-pink);
+            transform: translateY(-2px);
+        }
+
+        .mood-option.selected {
+            border-color: var(--primary-pink);
+            background: #FFF5F9;
+        }
+
+        .mood-emoji {
+            font-size: 28px;
+        }
+
+        .mood-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .appointment-card {
+            margin: 0 24px 24px;
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .appointment-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .appointment-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .doctor-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .doctor-profile {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .doctor-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .doctor-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .doctor-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .video-call-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .video-call-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .specialists-section {
+            padding: 0 24px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .see-all-link {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .specialists-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .specialist-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .specialist-count {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .specialist-type {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .specialist-avatars {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mini-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .more-count {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mood Calendar / More Page */
+        .more-page {
+            background: #FFF5F7;
+            min-height: 100%;
+            padding-bottom: 100px;
+        }
+
+        .page-header {
+            background: transparent;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .header-title-group {
+            text-align: center;
+        }
+
+        .header-main-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .calendar-header-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-section {
+            padding: 0 24px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .weekday-label {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 24px;
+        }
+
+        .calendar-day {
+            aspect-ratio: 1;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-unit {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .summary-card {
+            margin: 0 24px;
+            background: linear-gradient(135deg, #FFCBA4 0%, #FFB5D8 100%);
+            border-radius: 20px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::after {
+            content: '😊';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%) rotate(15deg);
+            font-size: 80px;
+            opacity: 0.3;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: rgba(0,0,0,0.6);
+            margin-bottom: 8px;
+        }
+
+        .summary-mood {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .summary-description {
+            font-size: 13px;
+            color: rgba(0,0,0,0.7);
+            line-height: 1.4;
+            max-width: 65%;
+        }
+
+        /* Schedule Page */
+        .schedule-page {
+            background: #FAFAFA;
+            min-height: 100%;
+            padding-bottom: 100px;
+        }
+
+        .schedule-header {
+            background: white;
+            padding: 20px 24px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .schedule-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .schedule-subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .schedule-list {
+            padding: 20px 24px;
+        }
+
+        .schedule-date-group {
+            margin-bottom: 24px;
+        }
+
+        .date-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .date-badge {
+            background: var(--primary-pink);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .appointment-item {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .appointment-item:hover {
+            transform: translateX(4px);
+        }
+
+        .appointment-time-badge {
+            background: #F0F0F0;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .appointment-details {
+            flex: 1;
+        }
+
+        .appointment-type {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .appointment-doctor {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .appointment-status {
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-upcoming {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-completed {
+            background: #F5F5F5;
+            color: #757575;
+        }
+
+        .add-appointment-btn {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--text-primary);
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            z-index: 40;
+        }
+
+        .add-appointment-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+        }
+
+        /* Statistics Page */
+        .statistics-page {
+            background: #FAFAFA;
+            min-height: 100%;
+            padding-bottom: 100px;
+        }
+
+        .statistics-header {
+            background: linear-gradient(135deg, var(--primary-pink) 0%, var(--primary-purple) 100%);
+            padding: 24px;
+            color: white;
+        }
+
+        .statistics-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .statistics-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .time-range-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .range-option {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .range-option.active {
+            background: white;
+            color: var(--primary-pink);
+        }
+
+        .chart-section {
+            padding: 24px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+        }
+
+        .mood-chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 180px;
+            gap: 8px;
+        }
+
+        .chart-bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: linear-gradient(to top, var(--primary-pink), var(--primary-purple));
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.8;
+            transform: scaleY(1.05);
+        }
+
+        .chart-bar-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .insight-card {
+            background: linear-gradient(135deg, #FFF5F7 0%, #F0E7FF 100%);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .insight-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .insight-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .insight-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .progress-section {
+            padding: 0 24px;
+        }
+
+        .progress-card {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .progress-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .progress-percentage {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-pink);
+        }
+
+        .progress-bar-bg {
+            height: 12px;
+            background: #F0F0F0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-pink), var(--primary-purple));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Mock Data
+        const moodEmojis = ['😊', '😠', '😴', '😒'];
+        const moodLabels = ['Happy', 'Angry', 'Sleepy', 'Bored'];
+        
+        const calendarData = [
+            { day: '', emoji: '' },
+            { day: '', emoji: '😊' },
+            { day: '', emoji: '' },
+            { day: '😟' },
+            { day: '😊' },
+            { day: '😠' },
+            { day: '😞' },
+            { day: '😠' },
+            { day: '😊' },
+            { day: '😊' },
+            { day: '' },
+            { day: '😊' },
+            { day: '😠' },
+            { day: '😊' },
+            { day: '😟' },
+            { day: '😴' },
+            { day: '😊' },
+            { day: '😴' },
+            { day: '😊' },
+            { day: '😟' },
+            { day: '😠' },
+            { day: '😊' },
+            { day: '😊' },
+            { day: '😊' },
+            { day: '😊' },
+            { day: '😟' },
+            { day: '😊' },
+            { day: '' },
+            { day: '😊' },
+            { day: '' },
+            { day: '' },
+        ];
+
+        const appointments = [
+            { id: 1, date: 'Today', time: '01:00 PM - 02:00 PM', type: 'Psychotherapy', doctor: 'Jenny Mckenzie', role: 'Doctor', status: 'upcoming' },
+            { id: 2, date: 'Tomorrow', time: '10:00 AM - 11:00 AM', type: 'Coaching Session', doctor: 'Sarah Johnson', role: 'Coach', status: 'upcoming' },
+            { id: 3, date: 'March 25', time: '03:00 PM - 04:00 PM', type: 'Group Therapy', doctor: 'Dr. Michael Chen', role: 'Psychologist', status: 'upcoming' },
+            { id: 4, date: 'March 23', time: '02:00 PM - 03:00 PM', type: 'Psychotherapy', doctor: 'Jenny Mckenzie', role: 'Doctor', status: 'completed' },
+            { id: 5, date: 'March 20', time: '11:00 AM - 12:00 PM', type: 'Mindfulness Session', doctor: 'Emma Wilson', role: 'Therapist', status: 'completed' },
+        ];
+
+        const chartData = [
+            { label: 'Mon', value: 75 },
+            { label: 'Tue', value: 82 },
+            { label: 'Wed', value: 68 },
+            { label: 'Thu', value: 90 },
+            { label: 'Fri', value: 85 },
+            { label: 'Sat', value: 78 },
+            { label: 'Sun', value: 88 },
+        ];
+
+        function App() {
+            const [currentPage, setCurrentPage] = useState('welcome');
+            const [selectedMood, setSelectedMood] = useState(null);
+
+            const renderWelcomePage = () => (
+                <div className="welcome-page">
+                    <div className="notch"></div>
+                    <div className="status-bar" style={{color: '#000'}}>
+                        <span>9:41</span>
+                        <div style={{display: 'flex', gap: '6px'}}>
+                            <i className="fas fa-signal"></i>
+                            <i className="fas fa-wifi"></i>
+                            <i className="fas fa-battery-full"></i>
+                        </div>
+                    </div>
+                    
+                    <div className="flower-decoration flower-1"></div>
+                    <div className="flower-decoration flower-2"></div>
+                    <div className="flower-decoration flower-3"></div>
+                    <div className="flower-decoration flower-4"></div>
+                    
+                    <img 
+                        src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=400&fit=crop" 
+                        alt="User 1" 
+                        className="user-image-1"
+                    />
+                    <img 
+                        src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=300&h=400&fit=crop" 
+                        alt="User 2" 
+                        className="user-image-2"
+                    />
+                    
+                    <div className="welcome-text">
+                        <h1 className="welcome-title">We care how<br/>you feel!</h1>
+                        <button className="share-mood-btn" onClick={() => setCurrentPage('home')}>
+                            Share My Mood!
+                            <i className="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const renderHomePage = () => (
+                <div className="home-page">
+                    <div className="notch"></div>
+                    <div className="status-bar">
+                        <span>9:41</span>
+                        <div style={{display: 'flex', gap: '6px'}}>
+                            <i className="fas fa-signal"></i>
+                            <i className="fas fa-wifi"></i>
+                            <i className="fas fa-battery-full"></i>
+                        </div>
+                    </div>
+
+                    <div className="home-header">
+                        <div className="user-info">
+                            <img 
+                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" 
+                                alt="Avatar" 
+                                className="user-avatar"
+                            />
+                            <div>
+                                <div className="greeting">Welcome back</div>
+                                <div className="user-name">Dany Miller</div>
+                            </div>
+                        </div>
+                        <button className="notification-btn">
+                            <i className="far fa-bell"></i>
+                        </button>
+                    </div>
+
+                    <div className="mood-section">
+                        <h2 className="mood-question">Hello Dany! How are you feeling today?</h2>
+                        <div className="mood-options">
+                            {moodEmojis.map((emoji, index) => (
+                                <div 
+                                    key={index}
+                                    className={`mood-option ${selectedMood === index ? 'selected' : ''}`}
+                                    onClick={() => setSelectedMood(index)}
+                                >
+                                    <span className="mood-emoji">{emoji}</span>
+                                    <span className="mood-label">{moodLabels[index]}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="appointment-card">
+                        <div className="appointment-time">Today, 01:00 PM – 02:00 PM</div>
+                        <div className="appointment-title">Psychotherapy</div>
+                        <div className="doctor-info">
+                            <div className="doctor-profile">
+                                <img 
+                                    src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=100&h=100&fit=crop" 
+                                    alt="Doctor" 
+                                    className="doctor-avatar"
+                                />
+                                <div>
+                                    <div className="doctor-name">Jenny Mckenzie</div>
+                                    <div className="doctor-role">Doctor</div>
+                                </div>
+                            </div>
+                            <button className="video-call-btn">
+                                <i className="fas fa-video"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="specialists-section">
+                        <div className="section-header">
+                            <h3 className="section-title">Specialists</h3>
+                            <a href="#" className="see-all-link">
+                                See all <i className="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        <div className="specialists-grid">
+                            <div className="specialist-card">
+                                <div className="specialist-count">8 specialists</div>
+                                <div className="specialist-type">Mental coaches</div>
+                                <div className="specialist-avatars">
+                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop" alt="" className="mini-avatar" />
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop" alt="" className="mini-avatar" />
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=64&h=64&fit=crop" alt="" className="mini-avatar" />
+                                    <div className="more-count">+4</div>
+                                </div>
+                            </div>
+                            <div className="specialist-card">
+                                <div className="specialist-count">11 specialists</div>
+                                <div className="specialist-type">Psychologists</div>
+                                <div className="specialist-avatars">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop" alt="" className="mini-avatar" />
+                                    <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=64&h=64&fit=crop" alt="" className="mini-avatar" />
+                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop" alt="" className="mini-avatar" />
+                                    <div className="more-count">+7</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bottom-nav">
+                        <div className={`nav-item ${currentPage === 'home' ? 'active' : ''}`} onClick={() => setCurrentPage('home')}>
+                            <i className="fas fa-home"></i>
+                            <span>Home</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'schedule' ? 'active' : ''}`} onClick={() => setCurrentPage('schedule')}>
+                            <i className="far fa-calendar-alt"></i>
+                            <span>Schedule</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'statistics' ? 'active' : ''}`} onClick={() => setCurrentPage('statistics')}>
+                            <i className="fas fa-chart-bar"></i>
+                            <span>Statistics</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'more' ? 'active' : ''}`} onClick={() => setCurrentPage('more')}>
+                            <i className="fas fa-th-large"></i>
+                            <span>More</span>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderMorePage = () => (
+                <div className="more-page">
+                    <div className="notch"></div>
+                    <div className="status-bar">
+                        <span>9:41</span>
+                        <div style={{display: 'flex', gap: '6px'}}>
+                            <i className="fas fa-signal"></i>
+                            <i className="fas fa-wifi"></i>
+                            <i className="fas fa-battery-full"></i>
+                        </div>
+                    </div>
+
+                    <div className="page-header">
+                        <button className="back-btn" onClick={() => setCurrentPage('home')}>
+                            <i className="fas fa-chevron-left"></i>
+                        </button>
+                        <div className="header-title-group">
+                            <div className="header-main-title">Mood Calendar</div>
+                            <div className="header-subtitle">March</div>
+                        </div>
+                        <button className="calendar-header-icon">
+                            <i className="far fa-calendar-plus"></i>
+                        </button>
+                    </div>
+
+                    <div className="calendar-section">
+                        <div className="weekdays">
+                            <div className="weekday-label">Sun</div>
+                            <div className="weekday-label">Mon</div>
+                            <div className="weekday-label">Tue</div>
+                            <div className="weekday-label">Wed</div>
+                            <div className="weekday-label">Thu</div>
+                            <div className="weekday-label">Fri</div>
+                            <div className="weekday-label">Sat</div>
+                        </div>
+                        <div className="calendar-grid">
+                            {calendarData.map((day, index) => (
+                                <div key={index} className="calendar-day" style={{
+                                    background: day.emoji ? (index % 3 === 0 ? '#FFB5D8' : index % 3 === 1 ? '#A8C8FF' : '#C4A3E8') : 'transparent'
+                                }}>
+                                    {day.emoji || ''}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-label">Activity</div>
+                                <div className="stat-value">101,513</div>
+                                <div className="stat-unit">Steps</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Therapy</div>
+                                <div className="stat-value">10/30</div>
+                                <div className="stat-unit">Sessions</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Discipline</div>
+                                <div className="stat-value">88%</div>
+                                <div className="stat-unit">Focus score</div>
+                            </div>
+                        </div>
+
+                        <div className="summary-card">
+                            <div className="summary-label">Monthly Mood Summary</div>
+                            <div className="summary-mood">Pleased</div>
+                            <div className="summary-description">
+                                You're relaxed and positive — keep that great energy going!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bottom-nav">
+                        <div className={`nav-item ${currentPage === 'home' ? 'active' : ''}`} onClick={() => setCurrentPage('home')}>
+                            <i className="fas fa-home"></i>
+                            <span>Home</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'schedule' ? 'active' : ''}`} onClick={() => setCurrentPage('schedule')}>
+                            <i className="far fa-calendar-alt"></i>
+                            <span>Schedule</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'statistics' ? 'active' : ''}`} onClick={() => setCurrentPage('statistics')}>
+                            <i className="fas fa-chart-bar"></i>
+                            <span>Statistics</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'more' ? 'active' : ''}`} onClick={() => setCurrentPage('more')}>
+                            <i className="fas fa-th-large"></i>
+                            <span>More</span>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderSchedulePage = () => (
+                <div className="schedule-page">
+                    <div className="notch"></div>
+                    <div className="status-bar">
+                        <span>9:41</span>
+                        <div style={{display: 'flex', gap: '6px'}}>
+                            <i className="fas fa-signal"></i>
+                            <i className="fas fa-wifi"></i>
+                            <i className="fas fa-battery-full"></i>
+                        </div>
+                    </div>
+
+                    <div className="schedule-header">
+                        <h1 className="schedule-title">Schedule</h1>
+                        <p className="schedule-subtitle">Your upcoming appointments</p>
+                    </div>
+
+                    <div className="schedule-list">
+                        {['Today', 'Tomorrow', 'March 25'].map((date) => (
+                            <div key={date} className="schedule-date-group">
+                                <div className="date-header">
+                                    <span className="date-badge">{date}</span>
+                                </div>
+                                {appointments.filter(a => a.date === date).map(appointment => (
+                                    <div key={appointment.id} className="appointment-item">
+                                        <div className="appointment-time-badge">
+                                            {appointment.time.split(' - ')[0]}
+                                        </div>
+                                        <div className="appointment-details">
+                                            <div className="appointment-type">{appointment.type}</div>
+                                            <div className="appointment-doctor">{appointment.doctor} • {appointment.role}</div>
+                                        </div>
+                                        <div className={`appointment-status status-${appointment.status}`}>
+                                            {appointment.status}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+
+                        <div className="schedule-date-group">
+                            <div className="date-header">
+                                <span style={{fontSize: '13px', color: '#999'}}>Past Appointments</span>
+                            </div>
+                            {appointments.filter(a => a.status === 'completed').map(appointment => (
+                                <div key={appointment.id} className="appointment-item" style={{opacity: 0.7}}>
+                                    <div className="appointment-time-badge">
+                                        {appointment.time.split(' - ')[0]}
+                                    </div>
+                                    <div className="appointment-details">
+                                        <div className="appointment-type">{appointment.type}</div>
+                                        <div className="appointment-doctor">{appointment.doctor} • {appointment.role}</div>
+                                    </div>
+                                    <div className="appointment-status status-completed">
+                                        completed
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <button className="add-appointment-btn">
+                        <i className="fas fa-plus"></i>
+                    </button>
+
+                    <div className="bottom-nav">
+                        <div className={`nav-item ${currentPage === 'home' ? 'active' : ''}`} onClick={() => setCurrentPage('home')}>
+                            <i className="fas fa-home"></i>
+                            <span>Home</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'schedule' ? 'active' : ''}`} onClick={() => setCurrentPage('schedule')}>
+                            <i className="far fa-calendar-alt"></i>
+                            <span>Schedule</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'statistics' ? 'active' : ''}`} onClick={() => setCurrentPage('statistics')}>
+                            <i className="fas fa-chart-bar"></i>
+                            <span>Statistics</span>
+                        </div>
+                        <div className={`nav-item ${currentPage === 'more' ? 'active' : ''}`} onClick={() => setCurrentPage('more')}>
+                            <i className="fas fa-th-large"></i>
+                            <span>More</span>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderStatisticsPage = () => {
+                const [selectedRange, setSelectedRange] = useState('week');
+
+                return (
+                    <div className="statistics-page">
+                        <div className="notch"></div>
+                        <div className="status-bar" style={{color: 'white'}}>
+                            <span>9:41</span>
+                            <div style={{display: 'flex', gap: '6px'}}>
+                                <i className="fas fa-signal"></i>
+                                <i className="fas fa-wifi"></i>
+                                <i className="fas fa-battery-full"></i>
+                            </div>
+                        </div>
+
+                        <div className="statistics-header">
+                            <h1 className="statistics-title">Statistics</h1>
+                            <p className="statistics-subtitle">Track your mental wellness journey</p>
+                            <div className="time-range-selector">
+                                <button 
+                                    className={`range-option ${selectedRange === 'week' ? 'active' : ''}`}
+                                    onClick={() => setSelectedRange('week')}
+                                >
+                                    Week
+                                </button>
+                                <button 
+                                    className={`range-option ${selectedRange === 'month' ? 'active' : ''}`}
+                                    onClick={() => setSelectedRange('month')}
+                                >
+                                    Month
+                                </button>
+                                <button 
+                                    className={`range-option ${selectedRange === 'year' ? 'active' : ''}`}
+                                    onClick={() => setSelectedRange('year')}
+                                >
+                                    Year
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="chart-section">
+                            <div className="chart-card">
+                                <h3 className="chart-title">Mood Trend</h3>
+                                <div className="mood-chart">
+                                    {chartData.map((data, index) => (
+                                        <div key={index} className="chart-bar-wrapper">
+                                            <div 
+                                                className="chart-bar" 
+                                                style={{height: `${data.value}%`}}
+                                                title={`${data.label}: ${data.value}%`}
+                                            ></div>
+                                            <div className="chart-bar-label">{data.label}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="insights-grid">
+                                <div className="insight-card">
+                                    <div className="insight-icon">😊</div>
+                                    <div className="insight-value">78%</div>
+                                    <div className="insight-label">Average Happiness</div>
+                                </div>
+                                <div className="insight-card">
+                                    <div className="insight-icon">🎯</div>
+                                    <div className="insight-value">12</div>
+                                    <div className="insight-label">Goals Achieved</div>
+                                </div>
+                                <div className="insight-card">
+                                    <div className="insight-icon">💪</div>
+                                    <div className="insight-value">89%</div>
+                                    <div className="insight-label">Consistency Rate</div>
+                                </div>
+                                <div className="insight-card">
+                                    <div className="insight-icon">🧘</div>
+                                    <div className="insight-value">24</div>
+                                    <div className="insight-label">Mindful Minutes</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="progress-section">
+                            <div className="progress-card">
+                                <div className="progress-header">
+                                    <div className="progress-title">Therapy Progress</div>
+                                    <div className="progress-percentage">67%</div>
+                                </div>
+                                <div className="progress-bar-bg">
+                                    <div className="progress-bar-fill" style={{width: '67%'}}></div>
+                                </div>
+                            </div>
+
+                            <div className="progress-card">
+                                <div className="progress-header">
+                                    <div className="progress-title">Monthly Goal</div>
+                                    <div className="progress-percentage">83%</div>
+                                </div>
+                                <div className="progress-bar-bg">
+                                    <div className="progress-bar-fill" style={{width: '83%'}}></div>
+                                </div>
+                            </div>
+
+                            <div className="progress-card">
+                                <div className="progress-header">
+                                    <div className="progress-title">Sleep Quality</div>
+                                    <div className="progress-percentage">92%</div>
+                                </div>
+                                <div className="progress-bar-bg">
+                                    <div className="progress-bar-fill" style={{width: '92%'}}></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="bottom-nav">
+                            <div className={`nav-item ${currentPage === 'home' ? 'active' : ''}`} onClick={() => setCurrentPage('home')}>
+                                <i className="fas fa-home"></i>
+                                <span>Home</span>
+                            </div>
+                            <div className={`nav-item ${currentPage === 'schedule' ? 'active' : ''}`} onClick={() => setCurrentPage('schedule')}>
+                                <i className="far fa-calendar-alt"></i>
+                                <span>Schedule</span>
+                            </div>
+                            <div className={`nav-item ${currentPage === 'statistics' ? 'active' : ''}`} onClick={() => setCurrentPage('statistics')}>
+                                <i className="fas fa-chart-bar"></i>
+                                <span>Statistics</span>
+                            </div>
+                            <div className={`nav-item ${currentPage === 'more' ? 'active' : ''}`} onClick={() => setCurrentPage('more')}>
+                                <i className="fas fa-th-large"></i>
+                                <span>More</span>
+                            </div>
+                        </div>
+                    </div>
+                );
+            };
+
+            return (
+                <div className="phone-container">
+                    {currentPage === 'welcome' && renderWelcomePage()}
+                    {currentPage === 'home' && renderHomePage()}
+                    {currentPage === 'more' && renderMorePage()}
+                    {currentPage === 'schedule' && renderSchedulePage()}
+                    {currentPage === 'statistics' && renderStatisticsPage()}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
+```
